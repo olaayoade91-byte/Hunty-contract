@@ -3,6 +3,11 @@
   "network": "mainnet",
   "rpcUrl": "replace-with-mainnet-rpc-url",
   "networkPassphrase": "Public Global Stellar Network ; September 2015",
+  "auditEvents": {
+    "contractId": "replace-with-mainnet-audit-events-contract-id",
+    "pollIntervalMs": 5000,
+    "startLedger": 0
+  },
   "contracts": {
     "huntyCore": "replace-with-mainnet-hunty-core-contract-id",
     "rewardManager": "replace-with-mainnet-reward-manager-contract-id",
