@@ -116,6 +116,15 @@ export function createApp({ config, limiter }: AppDeps): express.Express {
   });
 
   app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    // Honour client-error statuses raised by middleware such as express.json()
+    // (400 for malformed JSON, 413 for bodies over the size limit) instead of
+    // masking them as 500s.
+    const status = (err as { status?: number; statusCode?: number }).status
+      ?? (err as { statusCode?: number }).statusCode;
+    if (typeof status === 'number' && status >= 400 && status < 500) {
+      res.status(status).json({ error: err.message || 'Bad request' });
+      return;
+    }
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   });
