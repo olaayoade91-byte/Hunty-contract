@@ -53,7 +53,15 @@ function parseTrustProxy(env: NodeJS.ProcessEnv): boolean | number | string | un
   const raw = env.TRUST_PROXY?.trim();
   if (!raw) return undefined;
   const lower = raw.toLowerCase();
-  if (lower === 'true') return true;
+  if (lower === 'true') {
+    // Trusting every hop lets any client spoof X-Forwarded-For and reset the
+    // rate-limiter budget per request. Require an explicit hop count or subnet
+    // list instead (e.g. "1" behind a single load balancer, or
+    // "loopback, 10.0.0.0/8" for known proxy subnets).
+    throw new Error(
+      'TRUST_PROXY=true is not allowed: it trusts every X-Forwarded-For hop and lets clients spoof their IP to bypass the rate limiter. Set a hop count (e.g. TRUST_PROXY=1) or a subnet list (e.g. TRUST_PROXY="loopback, 10.0.0.0/8").',
+    );
+  }
   if (lower === 'false') return false;
   if (/^\d+$/.test(raw)) return Number(raw);
   // Otherwise an Express trust-proxy expression, e.g. "loopback" or "10.0.0.0/8, 172.16.0.0/12".

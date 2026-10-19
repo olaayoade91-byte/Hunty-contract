@@ -20,6 +20,14 @@ export function createApp({ config, limiter }: AppDeps): express.Express {
   // Must be set before any rate limiter so req.ip is the real client address
   // when running behind a reverse proxy / load balancer.
   if (config.trustProxy !== undefined) {
+    // Guard against TRUST_PROXY=true: trusting every hop lets any client spoof
+    // X-Forwarded-For and get a fresh rate-limit budget per request. Only a hop
+    // count or an explicit subnet list is safe.
+    if (config.trustProxy === true) {
+      console.warn(
+        'WARNING: TRUST_PROXY=true trusts every X-Forwarded-For hop, allowing clients to spoof their IP and bypass the rate limiter. Set TRUST_PROXY to a hop count (e.g. 1) or a subnet list instead.',
+      );
+    }
     app.set('trust proxy', config.trustProxy);
   }
   app.use(express.json({ limit: '10kb' }));
