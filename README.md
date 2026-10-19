@@ -608,3 +608,6 @@ Built on [Stellar](https://www.stellar.org/) and [Soroban](https://soroban.stell
 
 <!-- handsoff-issue-1109 -->
 - #1109: deploy_mainnet.sh calls initialize with arguments none of the contracts accept
+
+<!-- handsoff-issue-1341 -->
+- #1341: hunty-core: corrupt player progress is treated as "not registered"
